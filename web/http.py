@@ -55,7 +55,7 @@ def modified(date=None, etag=None):
     
     When you publish pages, you can include `Last-Modified` and `ETag`
     with the date the page was last modified and an opaque token for
-    the particular version, respectively. When readers reload the page, 
+    the particular version, respectively. When loaders reload the page,
     the browser sends along the modification date and etag value for
     the version it has in its cache. If the page hasn't changed, 
     the server can just return `304 Not Modified` and not have to 

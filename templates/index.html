@@ -7,24 +7,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/static/lib/css/bootstrap.css" rel="stylesheet">
-<!--
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-    -->
     <!-- Custom styles for this template -->
     <link href="/static/css/dashboard.css" rel="stylesheet">
   </head>
@@ -33,61 +16,59 @@
     <div class="row">
       <nav id="sidebarMenu" class="col-md-2 col-lg-2 d-md-block bg-light sidebar sidebarLeft collapse">
         <div class="sidebar-sticky pt-3">
-          <div class="form-group">
-            <label for="dataset">Dataset</label>
-            <select class="form-control form-control-sm" id="dataset">
-              <option value="none">None</option>
-              <option value="deap">DEAP</option>
-              <option value="wesad">WESAD</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="fselector">Feature Selector</label>
-            <select class="form-control form-control-sm" id="fselector">
-              <option value="none">None</option>
-              <option value="pca">PCA</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="classifier">Classifier</label>
-            <select class="form-control form-control-sm" id="classifier">
-              <option value="none">None</option>
-              <option value="svm">SVM</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="winSize">Window size (secs)</label>
-              <input type="text" class="form-control form-control-sm" id="winSize" style="text-align:center;" value="60">
+          <form onsubmit="return false;">
+            <div class="form-group">
+              <label for="dataset">Dataset</label>
+              <select class="form-control form-control-sm" id="dataset" required>
+                <option value="">None</option>
+                <option value="deap">DEAP</option>
+                <option value="wesad">WESAD</option>
+              </select>
             </div>
-            <div class="form-group col-md-6">
-              <label for="winOverlap">Time overlap (secs)</label>
-              <input type="text" class="form-control form-control-sm" id="winOverlap" style="text-align:center;" value="0">
-            </div>
-          </div>
 
-           <div class="form-group">
-            <label for="signals">Signals</label>
-            <select multiple class="form-control form-control-sm" id="signals">
-              <option>Signal 1</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label for="fselector">Feature Selector</label>
+              <select class="form-control form-control-sm" id="fselector" required>
+                <option value="">None</option>
+                <option value="pca">PCA</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="classifier">Classifier</label>
+              <select class="form-control form-control-sm" id="classifier" required>
+                <option value="">None</option>
+                <option value="svm">SVM</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="winSize">Window size (secs)</label>
+                <input type="text" class="form-control form-control-sm" id="winSize" style="text-align:center;" value="60" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="winOverlap">Time overlap (secs)</label>
+                <input type="text" class="form-control form-control-sm" id="winOverlap" style="text-align:center;" value="0" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="channels">Channels</label>
+              <select multiple class="form-control form-control-sm" id="channels" required>
+              </select>
+            </div>
+            <input id="btnExec" class="btn btn-secondary btn-sm" type="submit" value="Process">
+          </form>
         </div>
       </nav>
 
       <main role="main" class="col-md-6 ml-sm-auto col-lg-8 px-md-4" style="margin-right: auto;">
-        <h4 class="section">Time Series</h4>
-        <div class="row" style="height:30%;">
-          <svg id="plotSignal"></svg>
-        </div>
-
-        <h4 class="section">Classification</h4>
-        <div class="row" style="height:100%;">
-          <svg id="circumplex"></svg>
-        </div>
+          <h4 class="section">Classification</h4>
+          <div id="circumplex" style="height:100%; width:100%;"></div>
+          <h4 class="section">Time Series</h4>
+          <div id="chartSignals" class="row" style="height:30%;">
+          </div>
       </main>
 
       <nav id="sidebarMenu2" class="col-md-2 col-lg-2 d-md-block bg-light sidebar sidebarRight collapse">
@@ -95,7 +76,7 @@
           <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>Feature Contribution</span>
           </h6>
-          <div id="features"></div>
+          <div id="heatmap" style="width:100%; height:90%;"></div>
         </div>
       </nav>
 
@@ -105,8 +86,14 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script>
   <script src="/static/lib/js/bootstrap.bundle.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+  <!-- Load d3.js -->
+  <script src="https://d3js.org/d3.v4.js"></script>
+
+  <!-- Custom files -->
+  <script src="/static/js/classes/FeatureManager.js"></script>
+  <script src="/static/js/classes/SignalManager.js"></script>
+  <script src="/static/js/classes/CircumplexManager.js"></script>
+  <script src="/static/js/processController.js"></script>
   <script src="/static/js/dashboard.js"></script>
   </body>
 </html>
