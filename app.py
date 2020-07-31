@@ -4,7 +4,7 @@ import web
 
 from server.loaders import DataLoader
 from server.emoclass import EmoClassification as ec
-from server.emovis import EmoDiscretization as ediscc
+from server.emovis import EmoDiscretization as emodis
 
 render = web.template.render('templates/')
 
@@ -41,7 +41,7 @@ class ProcessDataset(object):
         data = json.loads(web.data())
         dataDB = DataLoader.load_dataset(data["dataset"], conf)
         #res = ec.initProcess(dataDB)
-        res = {'class': ediscc.discretize(dataDB['class_or'])}
+        res = {'class': emodis.discretize(dataDB['class_or'])}
         web.header('Content-Type', 'application/json')
         return json.dumps(res)
 
