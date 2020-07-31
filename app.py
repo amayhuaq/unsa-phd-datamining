@@ -2,7 +2,7 @@ import json
 from configparser import ConfigParser
 import web
 
-from server.loaders import DBLoader
+from server.loaders import DataLoader
 from server.emoclass import EmoClassification as ec
 from server.emovis import EmoDiscretization as ediscc
 
@@ -33,13 +33,13 @@ class LoadChannels(object):
     def POST(self):
         data = json.loads(web.data())
         web.header('Content-Type', 'application/json')
-        return json.dumps(DBLoader.load_channels(data["dataset"]))
+        return json.dumps(DataLoader.load_channels(data["dataset"]))
 
 
 class ProcessDataset(object):
     def POST(self):
         data = json.loads(web.data())
-        dataDB = DBLoader.load_dataset(data["dataset"], conf)
+        dataDB = DataLoader.load_dataset(data["dataset"], conf)
         #res = ec.initProcess(dataDB)
         res = {'class': ediscc.discretize(dataDB['class_or'])}
         web.header('Content-Type', 'application/json')

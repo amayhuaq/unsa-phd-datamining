@@ -5,6 +5,8 @@ Final project for the Data Mining Course
 For the execution of the application
 ```
 pip3 install web.py
+pip3 install numpy
+pip3 install configparser
 ```
 
 For the library of contrastive learning, follow the instructions in https://github.com/takanori-fujiwara/ccpca
