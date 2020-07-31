@@ -1,4 +1,4 @@
-import cPickle
+import _pickle as cPickle
 
 """
 data	40 x 40 x 8064	video/trial x channel x data
@@ -68,14 +68,14 @@ def load_dataset(path_db):
         'subjects': []
     }
     for i in range(1, 10):
-        x = cPickle.load(open(path_db + 's0' + str(i) + '.dat', 'rb'))
+        x = cPickle.load(open(path_db + 's0' + str(i) + '.dat', 'rb'), encoding='latin1')
         cls, info, channels = format_subject(i, x)
         data['class_or'] = data['class_or'] + cls
         data['subjects'] = data['subjects'] + info
         data['data'] = data['data'] + channels
 
     for i in range(10, 33):
-        x = cPickle.load(open(path_db + 's' + str(i) + '.dat', 'rb'))
+        x = cPickle.load(open(path_db + 's' + str(i) + '.dat', 'rb'), encoding='latin1')
         cls, info, channels = format_subject(i, x)
         data['class_or'] = data['class_or'] + cls
         data['subjects'] = data['subjects'] + info

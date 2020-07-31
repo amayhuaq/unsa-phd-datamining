@@ -1,4 +1,4 @@
-import DeapLoader
+import server.loaders.DeapLoader as DeapLoader
 
 loader = {
     'deap': DeapLoader.load_dataset,

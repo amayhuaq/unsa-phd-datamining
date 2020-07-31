@@ -1,5 +1,5 @@
 import json
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import web
 
 from server.loaders import DBLoader
