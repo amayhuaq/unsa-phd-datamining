@@ -11,9 +11,9 @@
     $("#chartSignals").height(Math.round(winHeight/3) + "px");
 
     $('#dataset').change(function() {
-        $("#channels option").remove();
+        $("#signals option").remove();
         if ($(this).val() != "") {
-            loadChannels($(this).val());
+            loadSignals($(this).val(), $("#signals"));
         }
     });
 }())

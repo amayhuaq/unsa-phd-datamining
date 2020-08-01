@@ -38,7 +38,7 @@ CircumplexManager.prototype.plotPoints = function(points) {
 
       // Color scale: give me a specie name, I return a color
       var color = d3.scaleOrdinal()
-        .domain(["Q1", "Q2", "Q3", "Q4" ])
+        .domain([0, 1, 2, 3 ])
         .range([ "#440154ff", "#21908dff", "#fde725ff", "#ff0005ff"])
 
       // Add dots

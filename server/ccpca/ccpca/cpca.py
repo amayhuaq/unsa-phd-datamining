@@ -23,7 +23,7 @@ class CPCA(cpca_cpp.CPCA):
     >>> from cpca import CPCA
 
     >>> dataset = datasets.load_iris()
-    >>> X = dataset.data
+    >>> X = dataset.signalData
     >>> y = dataset.target
 
     >>> # apply cPCA

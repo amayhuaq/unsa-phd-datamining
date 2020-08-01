@@ -5,16 +5,14 @@ import web
 from server.loaders import DataLoader
 from server.emoclass import EmoClassification as ec
 from server.emovis import EmoDiscretization as emodis
+from server.emovis import FeatureContribution as fcontrib
 
 render = web.template.render('templates/')
 
 urls = (
     '/', 'Index',
-    '/load_channels', 'LoadChannels',
-    '/process_dataset', 'ProcessDataset',
-    #'/gen_spec', 'GenSpec',
-    #'/recolor', 'Recolor',
-    #'/reproject', 'Reproject'
+    '/load_signals', 'LoadSignals',
+    '/process_dataset', 'ProcessDataset'
 )
 
 app = web.application(urls, globals())
@@ -23,59 +21,51 @@ app = web.application(urls, globals())
 conf = ConfigParser()
 conf.read('server/server_config.cfg')
 
+# variables
+nClasses = 4
+isOnline = False
+
 
 class Index(object):
     def GET(self):
         return render.index()
 
 
-class LoadChannels(object):
+class LoadSignals(object):
     def POST(self):
         data = json.loads(web.data())
         web.header('Content-Type', 'application/json')
-        return json.dumps(DataLoader.load_channels(data["dataset"]))
+        return json.dumps(DataLoader.load_signals(data["dataset"], conf))
 
 
 class ProcessDataset(object):
+    """
+    data = {
+        'dataset': idDataset,
+        'fselector': id fSelector,
+        'classifier': idClassifier,
+        'windowSize': float,
+        'windowOverlap': float,
+        'signals': Array
+    };
+    """
     def POST(self):
         data = json.loads(web.data())
-        dataDB = DataLoader.load_dataset(data["dataset"], conf)
-        #res = ec.initProcess(dataDB)
-        res = {'class': emodis.discretize(dataDB['class_or'])}
+        dataset_folder = conf.get('dataset', data["dataset"] + '_folder')
+        data_folder = conf.get('general', 'data_folder')
+        models_folder = conf.get('general', 'models_folder')
+        if isOnline:
+            DataLoader.convert_dataset(data["dataset"], dataset_folder, data_folder)
+        features, labels, feature_names = ec.initProcess(data, models_folder, data_folder)
+        labels, emotion_names = emodis.discretize(labels, nClasses)
+        featuresContrib, xlabels, ylabels = fcontrib.computeContribution(features, labels, emotion_names, feature_names)
+        res = {
+            'class': labels,
+            'features': {'fcs': featuresContrib, 'xlabels': xlabels, 'ylabels': ylabels}
+        }
         web.header('Content-Type', 'application/json')
         return json.dumps(res)
 
-"""
-class GenSpec(object):
-    def POST(self):
-        data = json.loads(web.data())
-        myspec = ve.Spec(data)
-        return json.dumps(myspec.gen(all_colors=True))
-
-
-class Recolor(object):
-    def POST(self):
-        data = json.loads(web.data())
-        fig_data = data['fig_data']
-        new_colormap = data['new_colormap']
-
-        if fig_data['legend']['type'] == 'discrete':
-            new_data = Recoloring.recolor_discrete(fig_data, new_colormap)
-        else:
-            new_data = Recoloring.recolor_continuous(fig_data, new_colormap)
-
-        web.header("Content-Type", "images/png")
-        return new_data
-
-
-class Reproject(object):
-    def POST(self):
-        data = json.loads(web.data())
-        fig_data = data['fig_data']
-        new_img = Reprojection.reproject(fig_data["filename"], fig_data["data"], fig_data["visenc"], data['new_projection'])
-        web.header("Content-Type", "images/png")
-        return new_img
-"""
 
 if __name__ == "__main__":
     app.run()

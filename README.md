@@ -6,6 +6,7 @@ For the execution of the application
 ```
 pip3 install web.py
 pip3 install numpy
+pip3 install pandas
 pip3 install configparser
 ```
 

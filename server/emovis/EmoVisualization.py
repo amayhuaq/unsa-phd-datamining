@@ -1,2 +1,0 @@
-from ccpca import CCPCA
-

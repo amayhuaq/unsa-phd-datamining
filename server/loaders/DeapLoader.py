@@ -1,4 +1,6 @@
-import _pickle as cPickle
+import _pickle
+import pandas as pd
+import os
 
 """
 data	40 x 40 x 8064	video/trial x channel x data
@@ -7,51 +9,27 @@ labels	40 x 4	        video/trial x label (valence, arousal, dominance, liking)
 * Arousal	The arousal rating (float between 1 and 9).
 """
 
+signalData = {
+    'EEG': { 'channels': ['Fp1', 'AF3', 'F3', 'F7', 'FC5', 'FC1', 'C3', 'T7', 'CP5', 'CP1', 'P3', 'P7', 'PO3', 'O1',
+                          'Oz', 'Pz', 'Fp2', 'AF4', 'Fz', 'F4', 'F8', 'FC6', 'FC2', 'Cz', 'C4', 'T8', 'CP6', 'CP2',
+                          'P4', 'P8', 'PO4', 'O2'],
+             'ini': 0 },
+    'EOG': { 'channels': ['hEOG', 'vEOG'], 'ini': 32 },
+    'EMG': { 'channels': ['zEMG', 'tEMG'], 'ini': 34 },
+    'GSR': { 'channels': ['GSR'], 'ini': 36 },
+    'RESP': { 'channels': ['Respiration'], 'ini': 37 },
+    'BVP': {'channels': ['Plethysmograph'], 'ini': 38},
+    'TEMP': {'channels': ['Temperature'], 'ini': 39},
+}
 
-def load_channels():
-    channels = [
-        {'id': 0, 'label': 'Fp1'},
-        {'id': 1, 'label': 'AF3'},
-        {'id': 2, 'label': 'F3'},
-        {'id': 3, 'label': 'F7'},
-        {'id': 4, 'label': 'FC5'},
-        {'id': 5, 'label': 'FC1'},
-        {'id': 6, 'label': 'C3'},
-        {'id': 7, 'label': 'T7'},
-        {'id': 8, 'label': 'CP5'},
-        {'id': 9, 'label': 'CP1'},
-        {'id': 10, 'label': 'P3'},
-        {'id': 11, 'label': 'P7'},
-        {'id': 12, 'label': 'PO3'},
-        {'id': 13, 'label': 'O1'},
-        {'id': 14, 'label': 'Oz'},
-        {'id': 15, 'label': 'Pz'},
-        {'id': 16, 'label': 'Fp2'},
-        {'id': 17, 'label': 'AF4'},
-        {'id': 18, 'label': 'Fz'},
-        {'id': 19, 'label': 'F4'},
-        {'id': 20, 'label': 'F8'},
-        {'id': 21, 'label': 'FC6'},
-        {'id': 22, 'label': 'FC2'},
-        {'id': 23, 'label': 'Cz'},
-        {'id': 24, 'label': 'C4'},
-        {'id': 25, 'label': 'T8'},
-        {'id': 26, 'label': 'CP6'},
-        {'id': 27, 'label': 'CP2'},
-        {'id': 28, 'label': 'P4'},
-        {'id': 29, 'label': 'P8'},
-        {'id': 30, 'label': 'PO4'},
-        {'id': 31, 'label': 'O2'},
-        {'id': 32, 'label': 'hEOG'},
-        {'id': 33, 'label': 'vEOG'},
-        {'id': 34, 'label': 'zEMG'},
-        {'id': 35, 'label': 'tEMG'},
-        {'id': 36, 'label': 'GSR'},
-        {'id': 37, 'label': 'Respiration'},
-        {'id': 38, 'label': 'Plethysmograph'},
-        {'id': 39, 'label': 'Temperature'}
-    ]
-    return channels
+subjects = ['s01', 's02', 's03', 's04', 's05', 's06', 's07', 's08', 's09', 's10',
+            's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20',
+            's21', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30',
+            's31', 's32']
+
+
+def load_signals(folder_path):
+    return signalData
 
 
 def format_subject(i, x):
@@ -61,24 +39,41 @@ def format_subject(i, x):
     return cls, info, channels
 
 
-def load_dataset(path_db):
-    data = {
-        'class_or': [],
-        'data': [],
-        'subjects': []
-    }
-    for i in range(1, 10):
-        x = cPickle.load(open(path_db + 's0' + str(i) + '.dat', 'rb'), encoding='latin1')
-        cls, info, channels = format_subject(i, x)
-        data['class_or'] = data['class_or'] + cls
-        data['subjects'] = data['subjects'] + info
-        data['data'] = data['data'] + channels
+def convert_dataset(path_db, output_folder):
+    all_df_y = pd.DataFrame()
+    channels_df_x = {}
+    for subj in subjects:
+        print("Loading " + subj + " data ...")
+        sXX = _pickle.load(open(path_db + subj + '.dat', 'rb'), encoding='latin1')
 
-    for i in range(10, 33):
-        x = cPickle.load(open(path_db + 's' + str(i) + '.dat', 'rb'), encoding='latin1')
-        cls, info, channels = format_subject(i, x)
-        data['class_or'] = data['class_or'] + cls
-        data['subjects'] = data['subjects'] + info
-        data['data'] = data['data'] + channels
+        # save labels
+        sXX_df = pd.DataFrame(sXX['labels'][:, 0:2])
+        sXX_df = sXX_df.round(0)
+        sXX_df.columns = ['valence', 'arousal']
+        temp_index = []
+        for j in range(40):
+            temp_index.append(subj + '_' + str(j))
+        sXX_df.index = temp_index
+        all_df_y = pd.concat([all_df_y, sXX_df])
 
-    return data
+        # save channels
+        for signal in signalData:
+            ch_ini = signalData[signal]['ini']
+            ch_end = ch_ini + len(signalData[signal]['channels'])
+            for ch in range(ch_ini, ch_end):
+                channel_df = pd.DataFrame(sXX['data'][:, ch, :])
+                channel_df.index = temp_index
+                idCh = signal + "_CH" + str(ch) + "_df_x"
+                if idCh not in channels_df_x:
+                    channels_df_x[idCh] = pd.DataFrame()
+                channels_df_x[idCh] = pd.concat([channels_df_x[idCh], channel_df])
+
+    _pickle.dump(all_df_y, open(output_folder + "all_df_y", "wb"))
+    for fname in channels_df_x:
+        _pickle.dump(channels_df_x[fname], open(output_folder + fname, "wb"))
+
+
+if __name__ == "__main__":
+    convert_dataset('../../datasets/deap_preprocessed/', '../../datasets/data_files/')
+    data = _pickle.load(open('../../datasets/data_files/all_df_y', 'rb'))
+    print(data)

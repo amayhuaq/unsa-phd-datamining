@@ -4,11 +4,12 @@ function FeatureManager(divId) {
 
 FeatureManager.prototype.plotFeatures = function(features) {
     $(this.div + " svg").remove();
+    $("#colormap").hide();
 
     // set the dimensions and margins of the graph
     var margin = {top: 30, right: 30, bottom: 30, left: 30},
-      width = 450 - margin.left - margin.right,
-      height = 450 - margin.top - margin.bottom;
+      width = $(this.div).width() - margin.left - margin.right,
+      height = $(this.div).height() - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3.select(this.div)
@@ -20,12 +21,17 @@ FeatureManager.prototype.plotFeatures = function(features) {
             "translate(" + margin.left + "," + margin.top + ")");
 
     // Labels of row and columns
-    var myGroups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
-    var myVars = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"]
+    var myGroups = features["xlabels"]
+    var myVars = features["ylabels"]
+    var myData = features["fcs"];
+    var data = []
+    for ( var i=0; i < myVars.length; i++ )
+        for ( var j=0; j < myGroups.length; j++ )
+            data.push({'emotion': myGroups[j], 'feature': myVars[i], 'val': myData[i][j]})
 
     // Build X scales and axis:
     var x = d3.scaleBand()
-      .range([ 0, width ])
+      .range([ 0, width*0.75 ])
       .domain(myGroups)
       .padding(0.01);
     svg.append("g")
@@ -38,25 +44,20 @@ FeatureManager.prototype.plotFeatures = function(features) {
       .domain(myVars)
       .padding(0.01);
     svg.append("g")
-      .call(d3.axisLeft(y));
+      .attr("transform", "translate(" + (width*0.75) + ", 0)")
+      .call(d3.axisRight(y));
 
     // Build color scale
-    var myColor = d3.scaleLinear()
-      .range(["white", "#69b3a2"])
-      .domain([1,100])
+    var myColor = d3.scaleSequential(d3.interpolateRdBu).domain([-1,1])
 
-    //Read the data
-    d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/heatmap_data.csv", function(data) {
-
-      svg.selectAll()
-          .data(data, function(d) {return d.group+':'+d.variable;})
+    svg.selectAll()
+          .data(data, function(d) {return d.emotion+':'+d.feature;})
           .enter()
           .append("rect")
-          .attr("x", function(d) { return x(d.group) })
-          .attr("y", function(d) { return y(d.variable) })
+          .attr("x", function(d) { return x(d.emotion) })
+          .attr("y", function(d) { return y(d.feature) })
           .attr("width", x.bandwidth() )
           .attr("height", y.bandwidth() )
-          .style("fill", function(d) { return myColor(d.value)} )
-
-    })
+          .style("fill", function(d) { return myColor(d.val)} )
+    $("#colormap").show();
 }

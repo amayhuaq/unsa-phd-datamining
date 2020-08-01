@@ -26,9 +26,9 @@
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="display:none;">
               <label for="fselector">Feature Selector</label>
-              <select class="form-control form-control-sm" id="fselector" required>
+              <select class="form-control form-control-sm" id="fselector">
                 <option value="">None</option>
                 <option value="pca">PCA</option>
               </select>
@@ -39,6 +39,7 @@
               <select class="form-control form-control-sm" id="classifier" required>
                 <option value="">None</option>
                 <option value="svm">SVM</option>
+                <option value="knn">kNN</option>
               </select>
             </div>
 
@@ -47,15 +48,15 @@
                 <label for="winSize">Window size (secs)</label>
                 <input type="text" class="form-control form-control-sm" id="winSize" style="text-align:center;" value="60" required>
               </div>
-              <div class="form-group col-md-6">
+              <div class="form-group col-md-6" style="display:none;">
                 <label for="winOverlap">Time overlap (secs)</label>
                 <input type="text" class="form-control form-control-sm" id="winOverlap" style="text-align:center;" value="0" required>
               </div>
             </div>
 
             <div class="form-group">
-              <label for="channels">Channels</label>
-              <select multiple class="form-control form-control-sm" id="channels" required>
+              <label for="signals">Signals</label>
+              <select multiple class="form-control form-control-sm" id="signals" required>
               </select>
             </div>
             <input id="btnExec" class="btn btn-secondary btn-sm" type="submit" value="Process">
@@ -66,8 +67,8 @@
       <main role="main" class="col-md-6 ml-sm-auto col-lg-8 px-md-4" style="margin-right: auto;">
           <h4 class="section">Classification</h4>
           <div id="circumplex" style="height:100%; width:100%;"></div>
-          <h4 class="section">Time Series</h4>
-          <div id="chartSignals" class="row" style="height:30%;">
+          <h4 class="section" style="display:none;">Time Series</h4>
+          <div id="chartSignals" class="row" style="display:none; height:30%;">
           </div>
       </main>
 
@@ -77,6 +78,7 @@
             <span>Feature Contribution</span>
           </h6>
           <div id="heatmap" style="width:100%; height:90%;"></div>
+          <img id="colormap" src="static/images/colormap.png" style="width:50%; display:none;"></img>
         </div>
       </nav>
 
@@ -88,6 +90,9 @@
   <script src="/static/lib/js/bootstrap.bundle.js"></script>
   <!-- Load d3.js -->
   <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://d3js.org/d3-color.v1.min.js"></script>
+  <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
   <!-- Custom files -->
   <script src="/static/js/classes/FeatureManager.js"></script>

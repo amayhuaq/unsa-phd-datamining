@@ -27,7 +27,7 @@ class CCPCA(ccpca_cpp.CCPCA):
     >>> from ccpca import CCPCA
 
     >>> dataset = datasets.load_iris()
-    >>> X = dataset.data
+    >>> X = dataset.signalData
     >>> y = dataset.target
 
     >>> # get dimensionality reduction result with the best alpha
