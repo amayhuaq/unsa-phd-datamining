@@ -173,70 +173,66 @@ def eegfft_range_(eegfft_max,eegfft_min,eeg_CH):
     return eegfft_range
 
 
-def extract_features(data_folder, file_names, ini, winSize, sample):
-    end = ini + winSize * sample
-    feature_df = pd.DataFrame()
+def extract_features(data_folder, filename, ini, end):
+    df_data_x = pickle.load(open(data_folder + filename, "rb"))
+    _, sig_sz = df_data_x.shape
+    df_data_x = df_data_x[range(ini, min(end, sig_sz))]
+    tmp = filename.split('_')
+    eeg_CH = tmp[0] + "_" + tmp[1] + "_"
 
-    for file in file_names:
-        df_data = pickle.load(open(data_folder + file, "rb"))
-        df_data = df_data[range(ini, end)]
-        eeg_CH = file.split('_')[1]
+    eeg_mean = pd.DataFrame(eeg_mean_(df_data_x), columns=['{}eeg_mean'.format(eeg_CH)])
+    eeg_median = pd.DataFrame(eeg_median_(df_data_x), columns=['{}eeg_median'.format(eeg_CH)])
+    eeg_std = pd.DataFrame(eeg_std_(df_data_x), columns=['{}eeg_std'.format(eeg_CH)])
+    eeg_min = pd.DataFrame(eeg_min_(df_data_x), columns=['{}eeg_min'.format(eeg_CH)])
+    eeg_max = pd.DataFrame(eeg_max_(df_data_x), columns=['{}eeg_max'.format(eeg_CH)])
+    eeg_range = pd.DataFrame(eeg_range_(eeg_max,eeg_min,eeg_CH), columns=['{}eeg_range'.format(eeg_CH)])
+    eeg_minRatio = pd.DataFrame(eeg_minRatio_(df_data_x,eeg_min,eeg_CH), columns=['{}eeg_minRatio'.format(eeg_CH)])
+    eeg_maxRatio = pd.DataFrame(eeg_maxRatio_(df_data_x,eeg_max,eeg_CH), columns=['{}eeg_maxRatio'.format(eeg_CH)])
 
-        eeg_mean = pd.DataFrame(eeg_mean_(df_data),columns=['{}eeg_mean'.format(eeg_CH)])
-        eeg_median = pd.DataFrame(eeg_median_(df_data),columns=['{}eeg_median'.format(eeg_CH)])
-        eeg_std = pd.DataFrame(eeg_std_(df_data),columns=['{}eeg_std'.format(eeg_CH)])
-        eeg_min = pd.DataFrame(eeg_min_(df_data),columns=['{}eeg_min'.format(eeg_CH)])
-        eeg_max = pd.DataFrame(eeg_max_(df_data),columns=['{}eeg_max'.format(eeg_CH)])
-        eeg_range = pd.DataFrame(eeg_range_(eeg_max,eeg_min,eeg_CH),columns=['{}eeg_range'.format(eeg_CH)])
-        eeg_minRatio = pd.DataFrame(eeg_minRatio_(df_data,eeg_min,eeg_CH),columns=['{}eeg_minRatio'.format(eeg_CH)])
-        eeg_maxRatio = pd.DataFrame(eeg_maxRatio_(df_data,eeg_max,eeg_CH),columns=['{}eeg_maxRatio'.format(eeg_CH)])
-    
-        eeg1Diff_mean = pd.DataFrame( eeg1Diff_mean_(df_data),columns=['{}eeg1Diff_mean'.format(eeg_CH)])
-        eeg1Diff_median = pd.DataFrame( eeg1Diff_median_(df_data),columns=['{}eeg1Diff_median'.format(eeg_CH)] )
-        eeg1Diff_std = pd.DataFrame( eeg1Diff_std_(df_data),columns=['{}eeg1Diff_std'.format(eeg_CH)])
-        eeg1Diff_min = pd.DataFrame( eeg1Diff_min_(df_data),columns=['{}eeg1Diff_min'.format(eeg_CH)])
-        eeg1Diff_max = pd.DataFrame( eeg1Diff_max_(df_data),columns=['{}eeg1Diff_max'.format(eeg_CH)])
-        eeg1Diff_range = pd.DataFrame( eeg1Diff_range_(eeg1Diff_max,eeg1Diff_min,eeg_CH),columns=['{}eeg1Diff_range'.format(eeg_CH)])
-        eeg1Diff_minRatio = eeg1Diff_minRatio_(df_data,eeg1Diff_min,eeg_CH)
-        eeg1Diff_minRatio.columns=['{}eeg1Diff_minRatio'.format(eeg_CH)]
-        eeg1Diff_maxRatio = eeg1Diff_maxRatio_(df_data,eeg1Diff_max,eeg_CH)
-        eeg1Diff_maxRatio.columns=['{}eeg1Diff_maxRatio'.format(eeg_CH)]
-    
-        eeg2Diff_std = pd.DataFrame( eeg2Diff_std_(df_data),columns=['{}eeg2Diff_std'.format(eeg_CH)] )
-        eeg2Diff_min = pd.DataFrame( eeg2Diff_min_(df_data),columns=['{}eeg2Diff_min'.format(eeg_CH)] ) 
-        eeg2Diff_max = pd.DataFrame( eeg2Diff_max_(df_data),columns=['{}eeg2Diff_max'.format(eeg_CH)] )
-        eeg2Diff_range = pd.DataFrame(eeg2Diff_range_(eeg2Diff_max,eeg2Diff_min,eeg_CH),columns=['{}eeg2Diff_range'.format(eeg_CH)])
-        eeg2Diff_minRatio = eeg2Diff_minRatio_(df_data,eeg2Diff_min,eeg_CH)
-        eeg2Diff_minRatio.columns=['{}eeg2Diff_minRatio'.format(eeg_CH)]
-        eeg2Diff_maxRatio = eeg2Diff_maxRatio_(df_data,eeg2Diff_max,eeg_CH)
-        eeg2Diff_maxRatio.columns=['{}eeg2Diff_maxRatio'.format(eeg_CH)]
+    eeg1Diff_mean = pd.DataFrame( eeg1Diff_mean_(df_data_x), columns=['{}eeg1Diff_mean'.format(eeg_CH)])
+    eeg1Diff_median = pd.DataFrame( eeg1Diff_median_(df_data_x), columns=['{}eeg1Diff_median'.format(eeg_CH)] )
+    eeg1Diff_std = pd.DataFrame( eeg1Diff_std_(df_data_x), columns=['{}eeg1Diff_std'.format(eeg_CH)])
+    eeg1Diff_min = pd.DataFrame( eeg1Diff_min_(df_data_x), columns=['{}eeg1Diff_min'.format(eeg_CH)])
+    eeg1Diff_max = pd.DataFrame( eeg1Diff_max_(df_data_x), columns=['{}eeg1Diff_max'.format(eeg_CH)])
+    eeg1Diff_range = pd.DataFrame( eeg1Diff_range_(eeg1Diff_max,eeg1Diff_min,eeg_CH), columns=['{}eeg1Diff_range'.format(eeg_CH)])
+    eeg1Diff_minRatio = eeg1Diff_minRatio_(df_data_x,eeg1Diff_min,eeg_CH)
+    eeg1Diff_minRatio.columns=['{}eeg1Diff_minRatio'.format(eeg_CH)]
+    eeg1Diff_maxRatio = eeg1Diff_maxRatio_(df_data_x,eeg1Diff_max,eeg_CH)
+    eeg1Diff_maxRatio.columns=['{}eeg1Diff_maxRatio'.format(eeg_CH)]
 
-        temp_eegfft = eegfft_(df_data)
-        locals()["{}eegfft_df".format(eeg_CH)] = temp_eegfft
-        eegfft_df = locals()["{}eegfft_df".format(eeg_CH)]
+    eeg2Diff_std = pd.DataFrame( eeg2Diff_std_(df_data_x), columns=['{}eeg2Diff_std'.format(eeg_CH)] )
+    eeg2Diff_min = pd.DataFrame( eeg2Diff_min_(df_data_x), columns=['{}eeg2Diff_min'.format(eeg_CH)] )
+    eeg2Diff_max = pd.DataFrame( eeg2Diff_max_(df_data_x), columns=['{}eeg2Diff_max'.format(eeg_CH)] )
+    eeg2Diff_range = pd.DataFrame(eeg2Diff_range_(eeg2Diff_max,eeg2Diff_min,eeg_CH), columns=['{}eeg2Diff_range'.format(eeg_CH)])
+    eeg2Diff_minRatio = eeg2Diff_minRatio_(df_data_x,eeg2Diff_min,eeg_CH)
+    eeg2Diff_minRatio.columns=['{}eeg2Diff_minRatio'.format(eeg_CH)]
+    eeg2Diff_maxRatio = eeg2Diff_maxRatio_(df_data_x,eeg2Diff_max,eeg_CH)
+    eeg2Diff_maxRatio.columns=['{}eeg2Diff_maxRatio'.format(eeg_CH)]
 
-        eegfft_mean = pd.DataFrame( eegfft_mean_(eegfft_df),columns=['{}eegfft_mean'.format(eeg_CH)])
-        eegfft_median = pd.DataFrame( eegfft_median_(eegfft_df),columns=['{}eegfft_median'.format(eeg_CH)])
-        eegfft_std = pd.DataFrame( eegfft_std_(eegfft_df),columns=['{}eegfft_std'.format(eeg_CH)])
-        eegfft_min = pd.DataFrame( eegfft_min_(eegfft_df),columns=['{}eegfft_min'.format(eeg_CH)])
-        eegfft_max = pd.DataFrame( eegfft_max_(eegfft_df),columns=['{}eegfft_max'.format(eeg_CH)])
-        eegfft_range = pd.DataFrame( eegfft_range_(eegfft_max,eegfft_min,eeg_CH),columns=['{}eegfft_range'.format(eeg_CH)])
-   
-        feature_list = ['eeg_mean','eeg_median','eeg_std','eeg_min','eeg_max','eeg_range',
-                    'eeg_minRatio','eeg_maxRatio','eeg1Diff_mean','eeg1Diff_median',
-                    'eeg1Diff_std','eeg1Diff_min','eeg1Diff_max','eeg1Diff_range',
-                    'eeg1Diff_minRatio','eeg1Diff_maxRatio','eeg2Diff_std',
-                    'eeg2Diff_min','eeg2Diff_max','eeg2Diff_range','eeg2Diff_minRatio',
-                    'eeg2Diff_maxRatio','eegfft_mean','eegfft_median','eegfft_std',
-                    'eegfft_min','eegfft_max','eegfft_range']
+    temp_eegfft = eegfft_(df_data_x)
+    locals()["{}eegfft_df".format(eeg_CH)] = temp_eegfft
+    eegfft_df = locals()["{}eegfft_df".format(eeg_CH)]
 
-        temp_feature_df = pd.DataFrame()
-        for i in feature_list:
-            temp_feature_df = pd.concat( [locals()[i], temp_feature_df],axis=1)
+    eegfft_mean = pd.DataFrame( eegfft_mean_(eegfft_df), columns=['{}eegfft_mean'.format(eeg_CH)])
+    eegfft_median = pd.DataFrame( eegfft_median_(eegfft_df), columns=['{}eegfft_median'.format(eeg_CH)])
+    eegfft_std = pd.DataFrame( eegfft_std_(eegfft_df), columns=['{}eegfft_std'.format(eeg_CH)])
+    eegfft_min = pd.DataFrame( eegfft_min_(eegfft_df), columns=['{}eegfft_min'.format(eeg_CH)])
+    eegfft_max = pd.DataFrame( eegfft_max_(eegfft_df), columns=['{}eegfft_max'.format(eeg_CH)])
+    eegfft_range = pd.DataFrame( eegfft_range_(eegfft_max,eegfft_min,eeg_CH), columns=['{}eegfft_range'.format(eeg_CH)])
 
-        pickle.dump(temp_feature_df, open(data_folder + "feat_" + file, "wb"))
-        feature_df = pd.concat([feature_df, temp_feature_df], axis=1)
+    feature_list = ['eeg_mean','eeg_median','eeg_std','eeg_min','eeg_max','eeg_range',
+                'eeg_minRatio','eeg_maxRatio','eeg1Diff_mean','eeg1Diff_median',
+                'eeg1Diff_std','eeg1Diff_min','eeg1Diff_max','eeg1Diff_range',
+                'eeg1Diff_minRatio','eeg1Diff_maxRatio','eeg2Diff_std',
+                'eeg2Diff_min','eeg2Diff_max','eeg2Diff_range','eeg2Diff_minRatio',
+                'eeg2Diff_maxRatio','eegfft_mean','eegfft_median','eegfft_std',
+                'eegfft_min','eegfft_max','eegfft_range']
+
+    temp_feature_df = pd.DataFrame()
+    for i in feature_list:
+        temp_feature_df = pd.concat([locals()[i], temp_feature_df], axis=1)
+    pickle.dump(temp_feature_df, open(data_folder + "feat_" + filename, "wb"))
 
     print('--- EEG features ---')
-    print(feature_df.shape)
-    return feature_df
+    print(temp_feature_df.shape)
+    return temp_feature_df

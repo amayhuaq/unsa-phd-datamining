@@ -2,13 +2,13 @@ import server.loaders.DeapLoader as DeapLoader
 
 loader = {
     'deap': DeapLoader.convert_dataset,
-    'deap_ch': DeapLoader.load_signals
+    'deap_ch': DeapLoader.load_channels
 }
 
 
-def load_signals(dataset, conf):
+def load_channels(dataset, dataset_folder):
     if dataset in loader.keys():
-        return loader[dataset + '_ch'](conf.get('dataset', dataset + '_folder'))
+        return loader[dataset + '_ch'](dataset_folder)
     return []
 
 

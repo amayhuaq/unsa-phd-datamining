@@ -1,38 +1,36 @@
 var featureManager = new FeatureManager("heatmap");
 var circumplexMan = new CircumplexManager("circumplex");
+var vegaSchema = 'https://vega.github.io/schema/vega-lite/v4.json';
 
-function loadSignals(dbId, htmlObj) {
-    var data = {'dataset': dbId};
-    d3.json('load_signals').header("Content-Type", "application/json")
-        .post(JSON.stringify(data), function (error, data) {
-            if (data) {
-                for (var signal in data) {
-                    htmlObj.append("<option value='" + signal + "'>" + signal + "</option>");
-                }
+function loadSignals(data, htmlObj) {
+    fetch('load_channels', {
+        method: 'POST',
+        body: JSON.stringify(data), // data can be `string` or {object}!
+        headers:{ 'Content-Type': 'application/json' }
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(function(response) {
+        if (response) {
+            console.log("Response: ", response)
+            sampleSize.value = response["sampleSize"];
+            var channels = response["channels"];
+            for (var i in channels) {
+                htmlObj.append("<option value='" + channels[i]['id'] + "'>" + channels[i]['label'] + "</option>");
             }
+        }
     });
 }
 
-function executeProcess() {
-    var data = {
-        'dataset': $("#dataset").val(),
-        //'fselector': $("#fselector").val(),
-        'classifier': $("#classifier").val(),
-        'winSize': Number($("#winSize").val()),
-        'winIni': 0,
-        'sampleSize': 128,
-        'signals': $("#signals").val()
-    };
-
-    if(data['dataset'] != "" && data['classifier'] != "" && !isNaN(data["winSize"])
-        && data["signals"].length > 0) {
-        d3.json('process_dataset').header("Content-Type", "application/json")
-            .post(JSON.stringify(data), function (error, data) {
-                console.log("Executing", data);
-                circumplexMan.plotPoints(data['class']);
-                featureManager.plotFeatures(data['features']);
-        });
-    }
-    else
-        console.log("Some parameters is needed.")
+function executeProcess(data) {
+    fetch('process_dataset', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers:{ 'Content-Type': 'application/json' }
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(function(response) {
+        console.log("Executing", response);
+        circumplexMan.plotPoints(response['class']);
+        featureManager.plotFeatures(response['features']);
+    });
 }

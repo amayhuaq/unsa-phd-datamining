@@ -4,7 +4,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticD
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn import svm, datasets
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 from joblib import dump, load
 
 classifiers = {
@@ -42,6 +42,8 @@ def test_classifier(clf, Xtest, ytest):
     print('Errors: ', str(np.count_nonzero(errors)) + ' / ' + str(len(ytest)))
     acc = accuracy_score(ytest, ypred)
     print('Accuracy: ', acc)
+    print('ConfusionMatrix')
+    print(confusion_matrix(ytest, ypred))
     return acc
 
 

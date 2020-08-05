@@ -1,63 +1,74 @@
-function FeatureManager(divId) {
-    this.div = "#" + divId;
+function FeatureManager(idDiv) {
+    this.idObj = "#" + idDiv;
+    this.htmlObj = $(this.idObj);
+}
+
+FeatureManager.prototype.formatData = function(features) {
+    var tmp, data = [];
+    for (var i=0; i < features['feat_names'].length; i++) {
+        for (var j=0; j < features['emo_names'].length; j++) {
+            tmp = features['feat_names'][i].split("_");
+            data.push({
+                'feature': features['feat_names'][i],
+                'emotion': features['emo_names'][j]['name'],
+                'value': features['fcs'][i][j],
+                'emotion_desc': features['emo_names'][j]['desc'],
+                'signal': tmp[0],
+                'channel': tmp[1]
+            });
+        }
+    }
+    return data;
 }
 
 FeatureManager.prototype.plotFeatures = function(features) {
-    $(this.div + " svg").remove();
-    $("#colormap").hide();
+    $(this.idObj + " canvas").remove();
+    var data = this.formatData(features);
+    console.log("FCS: ", data);
 
-    // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 30, bottom: 30, left: 30},
-      width = $(this.div).width() - margin.left - margin.right,
-      height = $(this.div).height() - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    var svg = d3.select(this.div)
-    .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    // Labels of row and columns
-    var myGroups = features["xlabels"]
-    var myVars = features["ylabels"]
-    var myData = features["fcs"];
-    var data = []
-    for ( var i=0; i < myVars.length; i++ )
-        for ( var j=0; j < myGroups.length; j++ )
-            data.push({'emotion': myGroups[j], 'feature': myVars[i], 'val': myData[i][j]})
-
-    // Build X scales and axis:
-    var x = d3.scaleBand()
-      .range([ 0, width*0.75 ])
-      .domain(myGroups)
-      .padding(0.01);
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-
-    // Build X scales and axis:
-    var y = d3.scaleBand()
-      .range([ height, 0 ])
-      .domain(myVars)
-      .padding(0.01);
-    svg.append("g")
-      .attr("transform", "translate(" + (width*0.75) + ", 0)")
-      .call(d3.axisRight(y));
-
-    // Build color scale
-    var myColor = d3.scaleSequential(d3.interpolateRdBu).domain([-1,1])
-
-    svg.selectAll()
-          .data(data, function(d) {return d.emotion+':'+d.feature;})
-          .enter()
-          .append("rect")
-          .attr("x", function(d) { return x(d.emotion) })
-          .attr("y", function(d) { return y(d.feature) })
-          .attr("width", x.bandwidth() )
-          .attr("height", y.bandwidth() )
-          .style("fill", function(d) { return myColor(d.val)} )
-    $("#colormap").show();
+    var visSpec = {
+        $schema: vegaSchema,
+        height: this.htmlObj.height() - 80,
+        width: this.htmlObj.width() - 60,
+        data: {
+            values: data
+        },
+        "config": {
+          "view": {
+              "strokeWidth": 0,
+              "step": 13
+          },
+          "axis": {
+              "domain": false
+          }
+        },
+        mark: "rect",
+        encoding: {
+            x: {
+                title: null,
+                field: "emotion",
+                type: "nominal"
+            },
+            y: {
+                title: null,
+                field: "feature",
+                type: "nominal",
+                axis: {
+                    orient: "right"
+                }
+            },
+            color: {
+                field: "value",
+                aggregate: "max",
+                type: "quantitative",
+                scale: {"range": "diverging", "domain": [-1,1]},
+                legend: {
+                    title: null,
+                    direction: "horizontal",
+                    orient: "bottom"
+                }
+            }
+        }
+    }
+    vegaEmbed(this.idObj, visSpec);
 }

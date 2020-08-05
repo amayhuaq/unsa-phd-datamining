@@ -184,65 +184,67 @@ def get_123count_(df):
     return tmp_df
     
 
-def extract_features(data_folder, file_names, ini, winSize, sample):
-    end = ini + winSize * sample
-    feature_df = pd.DataFrame()
+def extract_features(data_folder, filename, ini, end):
+    df_data_x = pickle.load(open(data_folder + filename, "rb"))
+    _, sig_sz = df_data_x.shape
+    df_data_x = df_data_x[range(ini, min(end, sig_sz))]
 
-    for file in file_names:
-        all_df_RSP_x = pickle.load(open(data_folder + file, "rb"))
-        all_df_RSP_x = all_df_RSP_x[range(ini, end)]
+    rsp_mean = pd.DataFrame(rsp_mean_(df_data_x),columns=['rsp_mean'])
+    rsp_median = pd.DataFrame(rsp_median_(df_data_x),columns=['rsp_median'])
+    rsp_std = pd.DataFrame(rsp_std_(df_data_x),columns=['rsp_std'])
+    rsp_min = pd.DataFrame(rsp_min_(df_data_x),columns=['rsp_min'])
+    rsp_max = pd.DataFrame(rsp_max_(df_data_x),columns=['rsp_max'])
+    rsp_range = pd.DataFrame(rsp_range_(rsp_max,rsp_min),columns=['rsp_range'])
+    rsp_minRatio = pd.DataFrame(rsp_minRatio_(df_data_x,rsp_min),columns=['rsp_minRatio'])
+    rsp_maxRatio = pd.DataFrame(rsp_maxRatio_(df_data_x,rsp_max),columns=['rsp_maxRatio'])
 
-        rsp_mean = pd.DataFrame(rsp_mean_(all_df_RSP_x),columns=['rsp_mean'])
-        rsp_median = pd.DataFrame(rsp_median_(all_df_RSP_x),columns=['rsp_median'])
-        rsp_std = pd.DataFrame(rsp_std_(all_df_RSP_x),columns=['rsp_std'])
-        rsp_min = pd.DataFrame(rsp_min_(all_df_RSP_x),columns=['rsp_min'])
-        rsp_max = pd.DataFrame(rsp_max_(all_df_RSP_x),columns=['rsp_max'])
-        rsp_range = pd.DataFrame(rsp_range_(rsp_max,rsp_min),columns=['rsp_range'])
-        rsp_minRatio = pd.DataFrame(rsp_minRatio_(all_df_RSP_x,rsp_min),columns=['rsp_minRatio'])
-        rsp_maxRatio = pd.DataFrame(rsp_maxRatio_(all_df_RSP_x,rsp_max),columns=['rsp_maxRatio'])
+    rsp1Diff_mean = pd.DataFrame( rsp1Diff_mean_(df_data_x),columns=['rsp1Diff_mean'])
+    rsp1Diff_median = pd.DataFrame( rsp1Diff_median_(df_data_x),columns=['rsp1Diff_median'] )
+    rsp1Diff_std = pd.DataFrame( rsp1Diff_std_(df_data_x),columns=['rsp1Diff_std'])
+    rsp1Diff_min = pd.DataFrame( rsp1Diff_min_(df_data_x),columns=['rsp1Diff_min'])
+    rsp1Diff_max = pd.DataFrame( rsp1Diff_max_(df_data_x),columns=['rsp1Diff_max'])
+    rsp1Diff_range = pd.DataFrame( rsp1Diff_range_(rsp1Diff_max,rsp1Diff_min),columns=['rsp1Diff_range'])
+    rsp1Diff_minRatio = rsp1Diff_minRatio_(df_data_x,rsp1Diff_min)
+    rsp1Diff_minRatio.columns=['rsp1Diff_minRatio']
+    rsp1Diff_maxRatio = rsp1Diff_maxRatio_(df_data_x,rsp1Diff_max)
+    rsp1Diff_maxRatio.columns=['rsp1Diff_maxRatio']
 
-        rsp1Diff_mean = pd.DataFrame( rsp1Diff_mean_(all_df_RSP_x),columns=['rsp1Diff_mean'])
-        rsp1Diff_median = pd.DataFrame( rsp1Diff_median_(all_df_RSP_x),columns=['rsp1Diff_median'] )
-        rsp1Diff_std = pd.DataFrame( rsp1Diff_std_(all_df_RSP_x),columns=['rsp1Diff_std'])
-        rsp1Diff_min = pd.DataFrame( rsp1Diff_min_(all_df_RSP_x),columns=['rsp1Diff_min'])
-        rsp1Diff_max = pd.DataFrame( rsp1Diff_max_(all_df_RSP_x),columns=['rsp1Diff_max'])
-        rsp1Diff_range = pd.DataFrame( rsp1Diff_range_(rsp1Diff_max,rsp1Diff_min),columns=['rsp1Diff_range'])
-        rsp1Diff_minRatio = rsp1Diff_minRatio_(all_df_RSP_x,rsp1Diff_min)
-        rsp1Diff_minRatio.columns=['rsp1Diff_minRatio']
-        rsp1Diff_maxRatio = rsp1Diff_maxRatio_(all_df_RSP_x,rsp1Diff_max)
-        rsp1Diff_maxRatio.columns=['rsp1Diff_maxRatio']
+    rsp2Diff_std = pd.DataFrame( rsp2Diff_std_(df_data_x),columns=['rsp2Diff_std'] )
+    rsp2Diff_min = pd.DataFrame( rsp2Diff_min_(df_data_x),columns=['rsp2Diff_min'] )
+    rsp2Diff_max = pd.DataFrame( rsp2Diff_max_(df_data_x),columns=['rsp2Diff_max'] )
+    rsp2Diff_range = pd.DataFrame(rsp2Diff_range_(rsp2Diff_max,rsp2Diff_min),columns=['rsp2Diff_range'])
+    rsp2Diff_minRatio = rsp2Diff_minRatio_(df_data_x,rsp2Diff_min)
+    rsp2Diff_minRatio.columns=['rsp2Diff_minRatio']
+    rsp2Diff_maxRatio = rsp2Diff_maxRatio_(df_data_x,rsp2Diff_max)
+    rsp2Diff_maxRatio.columns=['rsp2Diff_maxRatio']
 
-        rsp2Diff_std = pd.DataFrame( rsp2Diff_std_(all_df_RSP_x),columns=['rsp2Diff_std'] )
-        rsp2Diff_min = pd.DataFrame( rsp2Diff_min_(all_df_RSP_x),columns=['rsp2Diff_min'] )
-        rsp2Diff_max = pd.DataFrame( rsp2Diff_max_(all_df_RSP_x),columns=['rsp2Diff_max'] )
-        rsp2Diff_range = pd.DataFrame(rsp2Diff_range_(rsp2Diff_max,rsp2Diff_min),columns=['rsp2Diff_range'])
-        rsp2Diff_minRatio = rsp2Diff_minRatio_(all_df_RSP_x,rsp2Diff_min)
-        rsp2Diff_minRatio.columns=['rsp2Diff_minRatio']
-        rsp2Diff_maxRatio = rsp2Diff_maxRatio_(all_df_RSP_x,rsp2Diff_max)
-        rsp2Diff_maxRatio.columns=['rsp2Diff_maxRatio']
+    rspfft_df = rspfft_(df_data_x)
+    rspfft_mean = pd.DataFrame( rspfft_mean_(rspfft_df),columns=['rspfft_mean'])
+    rspfft_median = pd.DataFrame( rspfft_median_(rspfft_df),columns=['rspfft_median'])
+    rspfft_std = pd.DataFrame( rspfft_std_(rspfft_df),columns=['rspfft_std'])
+    rspfft_min = pd.DataFrame( rspfft_min_(rspfft_df),columns=['rspfft_min'])
+    rspfft_max = pd.DataFrame( rspfft_max_(rspfft_df),columns=['rspfft_max'])
+    rspfft_range = pd.DataFrame( rspfft_range_(rspfft_max,rspfft_min),columns=['rspfft_range'])
 
-        rspfft_df = rspfft_(all_df_RSP_x)
-        rspfft_mean = pd.DataFrame( rspfft_mean_(rspfft_df),columns=['rspfft_mean'])
-        rspfft_median = pd.DataFrame( rspfft_median_(rspfft_df),columns=['rspfft_median'])
-        rspfft_std = pd.DataFrame( rspfft_std_(rspfft_df),columns=['rspfft_std'])
-        rspfft_min = pd.DataFrame( rspfft_min_(rspfft_df),columns=['rspfft_min'])
-        rspfft_max = pd.DataFrame( rspfft_max_(rspfft_df),columns=['rspfft_max'])
-        rspfft_range = pd.DataFrame( rspfft_range_(rspfft_max,rspfft_min),columns=['rspfft_range'])
+    feature_list = ['rsp_mean','rsp_median','rsp_std','rsp_min','rsp_max','rsp_range',
+                    'rsp_minRatio','rsp_maxRatio','rsp1Diff_mean','rsp1Diff_median',
+                    'rsp1Diff_std','rsp1Diff_min','rsp1Diff_max','rsp1Diff_range',
+                    'rsp1Diff_minRatio','rsp1Diff_maxRatio','rsp2Diff_std',
+                    'rsp2Diff_min','rsp2Diff_max','rsp2Diff_range','rsp2Diff_minRatio',
+                    'rsp2Diff_maxRatio','rspfft_mean','rspfft_median','rspfft_std',
+                    'rspfft_min','rspfft_max','rspfft_range']
 
-        feature_list = ['rsp_mean','rsp_median','rsp_std','rsp_min','rsp_max','rsp_range',
-                        'rsp_minRatio','rsp_maxRatio','rsp1Diff_mean','rsp1Diff_median',
-                        'rsp1Diff_std','rsp1Diff_min','rsp1Diff_max','rsp1Diff_range',
-                        'rsp1Diff_minRatio','rsp1Diff_maxRatio','rsp2Diff_std',
-                        'rsp2Diff_min','rsp2Diff_max','rsp2Diff_range','rsp2Diff_minRatio',
-                        'rsp2Diff_maxRatio','rspfft_mean','rspfft_median','rspfft_std',
-                        'rspfft_min','rspfft_max','rspfft_range']
-        temp_feature_df = pd.DataFrame()
-        for i in feature_list:
-            temp_feature_df = pd.concat( [locals()[i],temp_feature_df],axis=1)
+    temp_feature_df = pd.DataFrame()
+    for i in feature_list:
+        temp_feature_df = pd.concat( [locals()[i], temp_feature_df], axis=1)
 
-        pickle.dump(temp_feature_df, open(data_folder + "feat_" + file, "wb"))
-        feature_df = pd.concat([feature_df, temp_feature_df], axis=1)
+    # rename columns with name of channel
+    tmp = filename.split('_')
+    ch_id = tmp[0] + "_" + tmp[1]
+    tmp_cols = temp_feature_df.columns
+    temp_feature_df.columns = [ch_id + "_" + name for name in tmp_cols]
+    pickle.dump(temp_feature_df, open(data_folder + "feat_" + filename, "wb"))
 
     print('--- RSP features ---')
-    print(feature_df.shape)
-    return feature_df
+    print(temp_feature_df.shape)
+    return temp_feature_df

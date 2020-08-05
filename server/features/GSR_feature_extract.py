@@ -180,65 +180,67 @@ def get_123count_(df):
     return tmp_df
     
 
-def extract_features(data_folder, file_names, ini, winSize, sample):
-    end = ini + winSize * sample
-    feature_df = pd.DataFrame()
+def extract_features(data_folder, filename, ini, end):
+    df_data_x = pickle.load(open(data_folder + filename, "rb"))
+    _, sig_sz = df_data_x.shape
+    df_data_x = df_data_x[range(ini, min(end, sig_sz))]
 
-    for file in file_names:
-        all_df_GSR_x = pickle.load(open(data_folder + file, "rb"))
-        all_df_GSR_x = all_df_GSR_x[range(ini, end)]
+    sc_mean = pd.DataFrame(sc_mean_(df_data_x), columns=['sc_mean'])
+    sc_median = pd.DataFrame(sc_median_(df_data_x),columns=['sc_median'])
+    sc_std = pd.DataFrame(sc_std_(df_data_x),columns=['sc_std'])
+    sc_min = pd.DataFrame(sc_min_(df_data_x),columns=['sc_min'])
+    sc_max = pd.DataFrame(sc_max_(df_data_x),columns=['sc_max'])
+    sc_range = pd.DataFrame(sc_range_(sc_max,sc_min),columns=['sc_range'])
+    sc_minRatio = pd.DataFrame(sc_minRatio_(df_data_x,sc_min),columns=['sc_minRatio'])
+    sc_maxRatio = pd.DataFrame(sc_maxRatio_(df_data_x,sc_max),columns=['sc_maxRatio'])
 
-        sc_mean = pd.DataFrame(sc_mean_(all_df_GSR_x), columns=['sc_mean'])
-        sc_median = pd.DataFrame(sc_median_(all_df_GSR_x),columns=['sc_median'])
-        sc_std = pd.DataFrame(sc_std_(all_df_GSR_x),columns=['sc_std'])
-        sc_min = pd.DataFrame(sc_min_(all_df_GSR_x),columns=['sc_min'])
-        sc_max = pd.DataFrame(sc_max_(all_df_GSR_x),columns=['sc_max'])
-        sc_range = pd.DataFrame(sc_range_(sc_max,sc_min),columns=['sc_range'])
-        sc_minRatio = pd.DataFrame(sc_minRatio_(all_df_GSR_x,sc_min),columns=['sc_minRatio'])
-        sc_maxRatio = pd.DataFrame(sc_maxRatio_(all_df_GSR_x,sc_max),columns=['sc_maxRatio'])
+    sc1Diff_mean = pd.DataFrame( sc1Diff_mean_(df_data_x),columns=['sc1Diff_mean'])
+    sc1Diff_median = pd.DataFrame( sc1Diff_median_(df_data_x),columns=['sc1Diff_median'] )
+    sc1Diff_std = pd.DataFrame( sc1Diff_std_(df_data_x),columns=['sc1Diff_std'])
+    sc1Diff_min = pd.DataFrame( sc1Diff_min_(df_data_x),columns=['sc1Diff_min'])
+    sc1Diff_max = pd.DataFrame( sc1Diff_max_(df_data_x),columns=['sc1Diff_max'])
+    sc1Diff_range = pd.DataFrame( sc1Diff_range_(sc1Diff_max,sc1Diff_min),columns=['sc1Diff_range'])
+    sc1Diff_minRatio = sc1Diff_minRatio_(df_data_x,sc1Diff_min)
+    sc1Diff_minRatio.columns=['sc1Diff_minRatio']
+    sc1Diff_maxRatio = sc1Diff_maxRatio_(df_data_x,sc1Diff_max)
+    sc1Diff_maxRatio.columns=['sc1Diff_maxRatio']
 
-        sc1Diff_mean = pd.DataFrame( sc1Diff_mean_(all_df_GSR_x),columns=['sc1Diff_mean'])
-        sc1Diff_median = pd.DataFrame( sc1Diff_median_(all_df_GSR_x),columns=['sc1Diff_median'] )
-        sc1Diff_std = pd.DataFrame( sc1Diff_std_(all_df_GSR_x),columns=['sc1Diff_std'])
-        sc1Diff_min = pd.DataFrame( sc1Diff_min_(all_df_GSR_x),columns=['sc1Diff_min'])
-        sc1Diff_max = pd.DataFrame( sc1Diff_max_(all_df_GSR_x),columns=['sc1Diff_max'])
-        sc1Diff_range = pd.DataFrame( sc1Diff_range_(sc1Diff_max,sc1Diff_min),columns=['sc1Diff_range'])
-        sc1Diff_minRatio = sc1Diff_minRatio_(all_df_GSR_x,sc1Diff_min)
-        sc1Diff_minRatio.columns=['sc1Diff_minRatio']
-        sc1Diff_maxRatio = sc1Diff_maxRatio_(all_df_GSR_x,sc1Diff_max)
-        sc1Diff_maxRatio.columns=['sc1Diff_maxRatio']
+    sc2Diff_std = pd.DataFrame( sc2Diff_std_(df_data_x),columns=['sc2Diff_std'] )
+    sc2Diff_min = pd.DataFrame( sc2Diff_min_(df_data_x),columns=['sc2Diff_min'] )
+    sc2Diff_max = pd.DataFrame( sc2Diff_max_(df_data_x),columns=['sc2Diff_max'] )
+    sc2Diff_range = pd.DataFrame(sc2Diff_range_(sc2Diff_max,sc2Diff_min),columns=['sc2Diff_range'])
+    sc2Diff_minRatio = sc2Diff_minRatio_(df_data_x,sc2Diff_min)
+    sc2Diff_minRatio.columns = ['sc2Diff_minRatio']
+    sc2Diff_maxRatio = sc2Diff_maxRatio_(df_data_x,sc2Diff_max)
+    sc2Diff_maxRatio.columns = ['sc2Diff_maxRatio']
 
-        sc2Diff_std = pd.DataFrame( sc2Diff_std_(all_df_GSR_x),columns=['sc2Diff_std'] )
-        sc2Diff_min = pd.DataFrame( sc2Diff_min_(all_df_GSR_x),columns=['sc2Diff_min'] )
-        sc2Diff_max = pd.DataFrame( sc2Diff_max_(all_df_GSR_x),columns=['sc2Diff_max'] )
-        sc2Diff_range = pd.DataFrame(sc2Diff_range_(sc2Diff_max,sc2Diff_min),columns=['sc2Diff_range'])
-        sc2Diff_minRatio = sc2Diff_minRatio_(all_df_GSR_x,sc2Diff_min)
-        sc2Diff_minRatio.columns = ['sc2Diff_minRatio']
-        sc2Diff_maxRatio = sc2Diff_maxRatio_(all_df_GSR_x,sc2Diff_max)
-        sc2Diff_maxRatio.columns = ['sc2Diff_maxRatio']
+    scfft_df = scfft_(df_data_x)
+    scfft_mean = pd.DataFrame( scfft_mean_(scfft_df),columns=['scfft_mean'])
+    scfft_median = pd.DataFrame( scfft_median_(scfft_df),columns=['scfft_median'])
+    scfft_std = pd.DataFrame( scfft_std_(scfft_df),columns=['scfft_std'])
+    scfft_min = pd.DataFrame( scfft_min_(scfft_df),columns=['scfft_min'])
+    scfft_max = pd.DataFrame( scfft_max_(scfft_df),columns=['scfft_max'])
+    scfft_range = pd.DataFrame( scfft_range_(scfft_max,scfft_min),columns=['scfft_range'])
 
-        scfft_df = scfft_(all_df_GSR_x)
-        scfft_mean = pd.DataFrame( scfft_mean_(scfft_df),columns=['scfft_mean'])
-        scfft_median = pd.DataFrame( scfft_median_(scfft_df),columns=['scfft_median'])
-        scfft_std = pd.DataFrame( scfft_std_(scfft_df),columns=['scfft_std'])
-        scfft_min = pd.DataFrame( scfft_min_(scfft_df),columns=['scfft_min'])
-        scfft_max = pd.DataFrame( scfft_max_(scfft_df),columns=['scfft_max'])
-        scfft_range = pd.DataFrame( scfft_range_(scfft_max,scfft_min),columns=['scfft_range'])
+    feature_list = ['sc_mean','sc_median','sc_std','sc_min','sc_max','sc_range',
+                    'sc_minRatio','sc_maxRatio','sc1Diff_mean','sc1Diff_median',
+                    'sc1Diff_std','sc1Diff_min','sc1Diff_max','sc1Diff_range',
+                    'sc1Diff_minRatio','sc1Diff_maxRatio','sc2Diff_std',
+                    'sc2Diff_min','sc2Diff_max','sc2Diff_range','sc2Diff_minRatio',
+                    'sc2Diff_maxRatio','scfft_mean','scfft_median','scfft_std',
+                    'scfft_min','scfft_max','scfft_range']
 
-        feature_list = ['sc_mean','sc_median','sc_std','sc_min','sc_max','sc_range',
-                        'sc_minRatio','sc_maxRatio','sc1Diff_mean','sc1Diff_median',
-                        'sc1Diff_std','sc1Diff_min','sc1Diff_max','sc1Diff_range',
-                        'sc1Diff_minRatio','sc1Diff_maxRatio','sc2Diff_std',
-                        'sc2Diff_min','sc2Diff_max','sc2Diff_range','sc2Diff_minRatio',
-                        'sc2Diff_maxRatio','scfft_mean','scfft_median','scfft_std',
-                        'scfft_min','scfft_max','scfft_range']
+    temp_feature_df = pd.DataFrame()
+    for i in feature_list:
+        temp_feature_df = pd.concat([locals()[i], temp_feature_df], axis=1)
 
-        temp_feature_df = pd.DataFrame()
-        for i in feature_list:
-            temp_feature_df = pd.concat([locals()[i], temp_feature_df], axis=1)
-        pickle.dump(temp_feature_df, open(data_folder + "feat_" + file, "wb"))
-        feature_df = pd.concat([feature_df, temp_feature_df], axis=1)
+    # rename columns with name of channel
+    tmp = filename.split('_')
+    ch_id = tmp[0] + "_" + tmp[1]
+    tmp_cols = temp_feature_df.columns
+    temp_feature_df.columns = [ch_id + "_" + name for name in tmp_cols]
+    pickle.dump(temp_feature_df, open(data_folder + "feat_" + filename, "wb"))
 
     print('--- GSR features ---')
-    print(feature_df.shape)
-    return feature_df
+    print(temp_feature_df.shape)
+    return temp_feature_df
