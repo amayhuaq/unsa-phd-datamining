@@ -2,7 +2,7 @@
 Final project for the Data Mining Course
 
 # Requirements
-For the execution of the application
+For the execution of the application in Ubuntu:
 ```
 pip3 install web.py
 pip3 install numpy
