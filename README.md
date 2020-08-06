@@ -18,3 +18,9 @@ python3 app.py
 ```
 
 Then, in the browser you can view the webpage http://localhost:8080/
+
+
+# Application
+The DEAP dataset is used as default dataset, you have to download the preprocessed dataset from https://www.eecs.qmul.ac.uk/mmv/datasets/deap/download.html.
+These *.dat files have to be inside the path /datasets/deap_preprocessed/
+
