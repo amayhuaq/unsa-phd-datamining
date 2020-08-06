@@ -9,12 +9,12 @@ FeatureManager.prototype.formatData = function(features) {
         for (var j=0; j < features['emo_names'].length; j++) {
             tmp = features['feat_names'][i].split("_");
             data.push({
-                'feature': features['feat_names'][i],
-                'emotion': features['emo_names'][j]['name'],
                 'value': features['fcs'][i][j],
+                'emotion': features['emo_names'][j]['name'],
                 'emotion_desc': features['emo_names'][j]['desc'],
                 'signal': tmp[0],
-                'channel': tmp[1]
+                'channel': tmp[1],
+                'feature': features['feat_names'][i]
             });
         }
     }

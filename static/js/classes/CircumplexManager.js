@@ -5,7 +5,7 @@ function CircumplexManager(idDiv) {
 
 CircumplexManager.prototype.plotPoints = function(points, emotions) {
     for (var i = 0; i < points.length; i++) {
-        points[i]["emo_name"] = emotions[points[i]["emotion"]]["name"];
+        points[i]["emo_name"] = emotions[points[i]["emotion"]]["desc"];
     }
 
     $(this.idObj + " canvas").remove();
@@ -18,7 +18,7 @@ CircumplexManager.prototype.plotPoints = function(points, emotions) {
         data: {
             values: points
         },
-        mark: 'circle',
+        mark: "circle",
         encoding: {
             x: {
                 title: 'Valence',
