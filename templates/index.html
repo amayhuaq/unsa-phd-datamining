@@ -22,7 +22,7 @@
               <select class="form-control form-control-sm" id="dataset" required>
                 <option value="">None</option>
                 <option value="deap">DEAP</option>
-                <option value="wesad">WESAD</option>
+                <!--<option value="wesad">WESAD</option>-->
               </select>
             </div>
 
@@ -81,9 +81,10 @@
               <select multiple id="channels" style="min-height: 120px;" class="form-control form-control-sm" required>
               </select>
             </div>
-
             <input id="btnExec" class="btn btn-secondary btn-sm" type="submit" value="Process">
           </form>
+
+          <div id="conf_matrix" style="display: none; width: 100%; height:300px; margin-top: 10px;"></div>
         </div>
       </nav>
 

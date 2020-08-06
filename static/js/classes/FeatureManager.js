@@ -26,9 +26,22 @@ FeatureManager.prototype.plotFeatures = function(features) {
     var data = this.formatData(features);
     console.log("FCS: ", data);
 
+    // change of visualization by channel when quantity features is greater than 60
+    var encodY = {
+        title: null,
+        field: "feature",
+        type: "nominal",
+        axis: {
+            orient: "right"
+        }
+    };
+    if(features["fcs"].length > 60) {
+        encodY['field'] = "channel"
+    }
+
     var visSpec = {
         $schema: vegaSchema,
-        height: this.htmlObj.height() - 80,
+        height: this.htmlObj.height() - 100,
         width: this.htmlObj.width() - 60,
         data: {
             values: data
@@ -42,24 +55,17 @@ FeatureManager.prototype.plotFeatures = function(features) {
               "domain": false
           }
         },
-        mark: "rect",
+        mark: {"type": "rect", "tooltip": {"content": "data"}},
         encoding: {
             x: {
                 title: null,
                 field: "emotion",
                 type: "nominal"
             },
-            y: {
-                title: null,
-                field: "feature",
-                type: "nominal",
-                axis: {
-                    orient: "right"
-                }
-            },
+            y: encodY,
             color: {
                 field: "value",
-                aggregate: "max",
+                aggregate: "mean",
                 type: "quantitative",
                 scale: {"range": "diverging", "domain": [-1,1]},
                 legend: {

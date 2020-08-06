@@ -30,7 +30,9 @@ function executeProcess(data) {
     .catch(error => console.error('Error:', error))
     .then(function(response) {
         console.log("Executing", response);
-        circumplexMan.plotPoints(response['class']);
+        circumplexMan.plotPoints(response['class'], response['emo_names']);
+        $("#conf_matrix canvas").remove();
+        circumplexMan.plotConfusionMatrix("#conf_matrix", response['emo_names'], response["class_gt"], response ["class"]);
         featureManager.plotFeatures(response['features']);
     });
 }

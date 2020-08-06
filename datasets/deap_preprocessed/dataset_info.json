@@ -169,26 +169,6 @@
          "signal":"EEG"
       },
       {
-         "idx":32,
-         "channel":"hEOG",
-         "signal":"EOG"
-      },
-      {
-         "idx": 33,
-         "channel":"vEOG",
-         "signal":"EOG"
-      },
-      {
-         "idx":34,
-         "channel":"zEMG",
-         "signal":"EMG"
-      },
-      {
-         "idx":35,
-         "channel":"tEMG",
-         "signal":"EMG"
-      },
-      {
          "idx":36,
          "channel":"GSR",
          "signal":"GSR"
@@ -197,16 +177,6 @@
          "idx":37,
          "channel":"Respiration",
          "signal":"RESP"
-      },
-      {
-         "idx":38,
-         "channel":"Plethysmograph",
-         "signal":"BVP"
-      },
-      {
-         "idx":39,
-         "channel":"Temperature",
-         "signal":"TEMP"
       }
    ]
 }

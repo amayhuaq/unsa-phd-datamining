@@ -64,7 +64,8 @@ class ProcessDataset(object):
         res = {
             'class': predicted_vals,
             'class_gt': ground_vals,
-            'features': {'fcs': featuresContrib, 'emo_names': emo_names, 'feat_names': feat_names}
+            'features': {'fcs': featuresContrib, 'emo_names': emo_names, 'feat_names': feat_names},
+            'emo_names': emo_names
         }
         web.header('Content-Type', 'application/json')
         return json.dumps(res)
